@@ -15,5 +15,5 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return DB::select('CALL PPAGOS_OBTIENE_CICLO_VIGENTE');
+    return DB::select('EXEC PPAGOS_OBTIENE_CICLO_VIGENTE');
 });
