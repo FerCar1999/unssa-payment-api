@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'auth'], function () {
     Route::post('login', [AuthController::class, 'login']);
-    Route::get('me', [AuthController::class, 'me']);
+    Route::post('me', [AuthController::class, 'me']);
 });
 
 Route::group(['prefix' => 'students'], function () {
