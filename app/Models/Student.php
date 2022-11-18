@@ -12,13 +12,13 @@ class Student extends Model
 
     public function checkLogin($code, $password, $ip)
     {
-        $validate = DB::select('EXEC ValidarAlumno ?,?,?', [$code, $password, $ip]);
+        $validate = DB::connection('sqlsrv')->select('EXEC ValidarAlumno ?,?,?', [$code, $password, $ip]);
         return $validate[0]->computed;
     }
 
     public function getInformation($code)
     {
-        $data = DB::select('EXEC PPAGOS_OBTIENE_DATOS_ESTUDIANTE ?', [$code]);
+        $data = DB::connection('sqlsrv')->select('EXEC PPAGOS_OBTIENE_DATOS_ESTUDIANTE ?', [$code]);
         return $data[0];
     }
 }
