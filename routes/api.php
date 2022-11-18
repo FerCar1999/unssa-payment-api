@@ -31,3 +31,9 @@ Route::group(['prefix' => 'payments'], function () {
     Route::get('made', [PaymentController::class, 'paymentsMade']);
     Route::get('duty', [PaymentController::class, 'duty']);
 });
+
+
+//RUTAS PARA EL LADO DE ADMINISTRADOR
+Route::group(['prefix' => 'admin'], function () {
+    Route::post('login', [AuthController::class, 'loginAdmin']);
+});
