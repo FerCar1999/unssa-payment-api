@@ -12,6 +12,6 @@ class Subject extends Model
 
     public function getSubjects($code, $cycle)
     {
-        return DB::connection('sqlsrv')->select('EXEC PPAGOS_OBTIENE_MATERIAS_INSCRITAS ?,?', [$code, $cycle]);
+        return DB::connection('sqlsrv')->select('SET NOCOUNT ON;EXEC PPAGOS_OBTIENE_MATERIAS_INSCRITAS ?,?', [$code, $cycle]);
     }
 }

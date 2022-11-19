@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 class CreatePaymentDetailsTable extends Migration
 {
+    protected $connection = 'mysql';
     /**
      * Run the migrations.
      *
@@ -14,11 +15,11 @@ class CreatePaymentDetailsTable extends Migration
     public function up()
     {
         Schema::create('payment_details', function (Blueprint $table) {
-            $table->string('id')->primary();
-            $table->foreignUuid('payment_id')->references('id')->on('payments');
-            $table->string('codigo_arancel');
-            $table->string('nombre_arancel');
-            $table->decimal('monto_arancel', 6, 2);
+            $table->id();
+            $table->foreignId('payment_id')->references('id')->on('payments');
+            $table->string('tariff_code');
+            $table->string('tariff_name');
+            $table->decimal('tariff_amount', 6, 2);
             $table->timestamps();
             $table->softDeletes();
         });

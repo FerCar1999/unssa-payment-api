@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Schema;
 
 class CreatePaymentsTable extends Migration
 {
+
+    protected $connection = 'mysql';
     /**
      * Run the migrations.
      *
@@ -14,15 +16,15 @@ class CreatePaymentsTable extends Migration
     public function up()
     {
         Schema::create('payments', function (Blueprint $table) {
-            $table->string('id')->primary();
-            $table->string('recibo_id');
-            $table->dateTime('fecha_hora_transaccion')->nullable();
-            $table->string('transaccion_id')->nullable();
-            $table->decimal('monto', 6, 2, true);
-            $table->string('carnet');
-            $table->string('carrera');
-            $table->string('ciclo');
-            $table->string('nombre_apellido');
+            $table->id();
+            $table->string('receipt_id');
+            $table->dateTime('date_time_transaction')->nullable();
+            $table->string('transaction_id')->nullable();
+            $table->decimal('amount', 6, 2, true);
+            $table->string('code');
+            $table->string('career');
+            $table->string('cycle');
+            $table->string('complete_name');
             $table->timestamps();
             $table->softDeletes();
         });

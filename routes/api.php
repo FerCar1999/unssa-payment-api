@@ -30,6 +30,7 @@ Route::group(['prefix' => 'students'], function () {
 Route::group(['prefix' => 'payments'], function () {
     Route::get('made', [PaymentController::class, 'paymentsMade']);
     Route::get('duty', [PaymentController::class, 'duty']);
+    Route::post('', [PaymentController::class, 'store']);
 });
 
 

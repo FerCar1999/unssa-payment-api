@@ -12,7 +12,7 @@ class Cycle extends Model
 
     public function getActualCycle()
     {
-        $cycle = DB::connection('sqlsrv')->select('EXEC PPAGOS_OBTIENE_CICLO_VIGENTE');
+        $cycle = DB::connection('sqlsrv')->select('SET NOCOUNT ON;EXEC PPAGOS_OBTIENE_CICLO_VIGENTE');
         return $cycle[0]->cil_codigo;
     }
 }

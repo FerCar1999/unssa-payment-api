@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateFailedJobsTable extends Migration
 {
+    protected $connection = 'mysql';
     /**
      * Run the migrations.
      *

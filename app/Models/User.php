@@ -12,7 +12,7 @@ class User extends Model
 
     public function checkLogin($user, $password)
     {
-        $validate = DB::connection('sqlsrv')->select('EXEC PPAGOS_VALIDA_USUARIO ?,?', [$user, $password]);
+        $validate = DB::connection('sqlsrv')->select('SET NOCOUNT ON;EXEC PPAGOS_VALIDA_USUARIO ?,?', [$user, $password]);
         return $validate[0]->hayRegistros;
     }
 }

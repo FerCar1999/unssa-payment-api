@@ -2,15 +2,23 @@
 
 namespace App\Models;
 
-use App\Traits\TraitUuid;
+use App\Traits\TraitUuid as TraitUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 class Payment extends Model
 {
-    use TraitUuid;
+    protected $connection = 'mysql';
 
-    protected $keyType = 'string';
+    protected $fillable = ['receipt_id', 'date_time_transaction', 'transaction_id', 'amount', 'code', 'career', 'cycle', 'complete_name'];
+
+    //RELACIONES
+    public function paymentDetails()
+    {
+        return $this->hasMany(PaymentDetail::class);
+    }
+
+    //FUNCIONES DE SQL SERVER
 
     public function getPaymentsMade($cycle, $code)
     {
