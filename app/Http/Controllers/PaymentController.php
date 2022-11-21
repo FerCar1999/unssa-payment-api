@@ -65,7 +65,7 @@ class PaymentController extends Controller
         if ($token) {
             $code = Crypt::decrypt($token);
             $student = $this->student->getInformation($code);
-            $duties = $this->payment->getDuty($student->car_codigo);
+            $duties = $this->payment->getDuty($student->per_carnet);
             //Obteniendo todos los pagos en linea registrados por el estudiante
             $online_payments = $this->payment->with('paymentDetails')->where('code', $student->per_carnet)->get();
             foreach ($duties as $duty) {

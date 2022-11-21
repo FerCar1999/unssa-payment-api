@@ -26,8 +26,8 @@ class Payment extends Model
     }
 
     //funcion para obtener aranceles
-    public function getDuty($career_code)
+    public function getDuty($carnet_student)
     {
-        return DB::connection('sqlsrv')->select('EXEC PPAGOS_OBTIENE_ARANCELES_CARRERA ?', [$career_code]);
+        return DB::connection('sqlsrv')->select('EXEC PPAGOS_OBTIENE_ARANCELES_CARRERA ?', [$carnet_student]);
     }
 }
