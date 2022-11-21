@@ -37,7 +37,7 @@ class AuthController extends Controller
 
     public function me(Request $request)
     {
-        $token = $request->header('token');
+        $token = $request->input('token');
         if ($token) {
             $code = Crypt::decrypt($token);
             $data = $this->student->getInformation($code);
