@@ -29,6 +29,7 @@ class PaymentController extends Controller
             $code = Crypt::decrypt($token);
             $cycle = $this->cycle->getActualCycle();
             $mades = $this->payment->getPaymentsMade($cycle, $code);
+            //return $mades;
             $student = $this->student->getInformation($code);
             $online_payments = $this->payment->with('paymentDetails')->where('code', $student->per_carnet)->get();
             foreach ($online_payments as $online_payment) {
@@ -43,7 +44,7 @@ class PaymentController extends Controller
                         }
                     }
                     if ($flag == false) {
-                        array_push($mades, array(
+                        array_push($mades,(object) array(
                             'mov_recibo' => $online_payment->transaction_id,
                             'tmo_descripcion' => $paymentDetail->tariff_name,
                             'dmo_codtmo' => $paymentDetail->tariff_code,
