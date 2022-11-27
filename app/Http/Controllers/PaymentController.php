@@ -22,6 +22,8 @@ class PaymentController extends Controller
         $this->cycle = $cycle;
     }
 
+    //FUNCIONES PARA OBTENER INFORMACION RELACIONADA A LOS PAGOS DEL ALUMNO
+
     public function paymentsMade(Request $request)
     {
         $token = $request->header('token');
@@ -85,7 +87,40 @@ class PaymentController extends Controller
         }
     }
 
-    //FUNCIONES YA INTERNAS
+    public function accountStatus(Request $request)
+    {
+        $token = $request->header('token');
+        if ($token) {
+            $code = Crypt::decrypt($token);
+            $paymentsMade = $this->paymentsMade($request);
+            $student = $this->student->getInformation($code);
+            $duties = $this->payment->getDuty($student->per_carnet);
+            foreach ($duties as $duty) {
+                $flag = false;
+                foreach ($paymentsMade as $paymentMade) {
+                    if ($duty->tmo_codigo == $paymentMade->dmo_codtmo) {
+                        $flag = true;
+                    }
+                }
+                //Si el pago pendiente no ha sido encontrado en los pagos realizados
+                if ($flag == false) {
+                    array_push($paymentsMade, (object) array(
+                        'mov_recibo' => null,
+                        'tmo_descripcion' => $duty->tmo_descripcion,
+                        'dmo_codtmo' => $duty->tmo_codigo,
+                        'valor' => $duty->tmo_valor,
+                        'mov_fecha' => null,
+                        'estado' => "No realizado",
+                    ));
+                }
+            }
+            return $paymentsMade;
+        } else {
+            return message(false, "Debe iniciar sesión", null, 400);
+        }
+    }
+
+    //FUNCION PARA REALIZAR EL PAGO
 
     public function store(Request $request)
     {
