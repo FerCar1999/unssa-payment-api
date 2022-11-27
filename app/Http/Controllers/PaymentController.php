@@ -44,9 +44,10 @@ class PaymentController extends Controller
                         }
                     }
                     if ($flag == false) {
-                        array_push($mades,(object) array(
+                        array_push($mades, (object) array(
                             'mov_recibo' => $online_payment->transaction_id,
                             'tmo_descripcion' => $paymentDetail->tariff_name,
+                            'mov_fecha' => Carbon::parse($online_payment->date_time_transaction,)->format('d/m/Y'),
                             'dmo_codtmo' => $paymentDetail->tariff_code,
                             'valor' => $paymentDetail->tariff_amount,
                             'estado' => "En línea"
