@@ -61,4 +61,16 @@ class AuthController extends Controller
             return message(false, "Verifique sus credenciales", null, 200);
         }
     }
+
+    public function meAdmin(Request $request)
+    {
+        $token = $request->input('token');
+        if ($token) {
+            $user = Crypt::decrypt($token);
+            $data = $this->user->getInformation($user);
+            return $data;
+        } else {
+            return message(false, "Debe iniciar sesión", null, 400);
+        }
+    }
 }

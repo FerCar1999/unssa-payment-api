@@ -132,9 +132,36 @@ class PaymentController extends Controller
     }
 
     //FUNCIONES DE ADMINISTRADOR
-    function getOnlinePayments()
+    public function getOnlinePayments()
     {
-        return $this->payment->with('paymentDetails')->get();
+        $start_date = Carbon::now()->format('Y') . '-01-01 00:00:00';
+        $end_date = Carbon::now()->format('Y') . '-12-31 23:59:59';
+        return $this->getPaymentsByDate($start_date, $end_date);
+    }
+
+    public function getOnlinePaymentsByDates($start_date, $end_date)
+    {
+        return $this->getPaymentsByDate($start_date . ' 00:00:00', $end_date . ' 23:59:59');
+    }
+
+    public function getPaymentsByDate($start_date, $end_date)
+    {
+        $payments = $this->payment->with('paymentDetails')->whereBetween('date_time_transaction', [$start_date, $end_date])->get();
+        //Mapeando los datos para enviar solo los necesarios para la tabla
+        $payments_map = $payments->map(function ($payment, $key) {
+            $payment_details_map = $payment->paymentDetails->map(function ($paymentDetail, $key) use ($payment) {
+                return (object) array(
+                    'transaction_id' => $payment->transaction_id,
+                    'code' => $payment->code,
+                    'date_time_transaction' => Carbon::parse($payment->date_time_transaction)->format('d/m/Y'),
+                    'tariff_code' => $paymentDetail->tariff_code,
+                    'tariff_name' => $paymentDetail->tariff_name,
+                    'tariff_amount' => $paymentDetail->tariff_amount,
+                );
+            });
+            return $payment_details_map;
+        });
+        return $payments_map->flatten()->all();
     }
 
     //Obtener un código que no se ha registrado hoy

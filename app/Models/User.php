@@ -15,4 +15,10 @@ class User extends Model
         $validate = DB::connection('sqlsrv')->select('SET NOCOUNT ON;EXEC PPAGOS_VALIDA_USUARIO ?,?', [$user, $password]);
         return $validate[0]->hayRegistros;
     }
+
+    public function getInformation($user)
+    {
+        $validate = DB::connection('sqlsrv')->select('SET NOCOUNT ON;EXEC PPAGOS_DATOS_USUARIO ?', [$user]);
+        return $validate[0];
+    }
 }

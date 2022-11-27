@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\StadisticController;
 use App\Http\Controllers\StudentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -37,4 +38,15 @@ Route::group(['prefix' => 'payments'], function () {
 //RUTAS PARA EL LADO DE ADMINISTRADOR
 Route::group(['prefix' => 'admin'], function () {
     Route::post('login', [AuthController::class, 'loginAdmin']);
+    Route::post('me', [AuthController::class, 'meAdmin']);
+    //Rutas para obtener los pagos en linea para el administrador
+    Route::group(['prefix' => 'payments'], function () {
+        Route::get('', [PaymentController::class, 'getOnlinePayments']);
+        Route::get('start/{start_date}/end/{end_date}', [PaymentController::class, 'getOnlinePaymentsByDates']);
+    });
+    //Rutas para obtener las gráficas en el administrador
+    Route::group(['prefix' => 'stadistics'], function () {
+        Route::get('count-payments-by-careers/start/{start_date}/end/{end_date}', [StadisticController::class, 'countPaymentsByCareers']);
+        Route::get('online-vs-register/start/{start_date}/end/{end_date}', [StadisticController::class, 'onlineVsRegister']);
+    });
 });
