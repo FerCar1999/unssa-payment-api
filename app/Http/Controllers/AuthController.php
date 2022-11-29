@@ -54,7 +54,7 @@ class AuthController extends Controller
         $user = $validateData['user'];
         $password = $validateData['password'];
         if ($this->user->checkLogin($user, $password)) {
-            $data = (object) array();
+            $data = $this->user->getInformation($user);
             $data->token = Crypt::encrypt($user);
             return message(true, "Sesión iniciada con éxito", $data, 200);
         } else {

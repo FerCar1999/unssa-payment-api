@@ -135,7 +135,7 @@ class PaymentController extends Controller
                 //Obteniendo receipt_id
                 $payment->receipt_id = rand(10000000, 99999999);;
                 $payment->date_time_transaction = Carbon::now();
-                $payment->transaction_id = "198347";
+                $payment->transaction_id = rand(10000000, 99999999);
                 //Sacando monto total de la transaccion
                 $payment->amount = 0;
                 foreach ($request->input('details') as $detail) {
@@ -146,6 +146,7 @@ class PaymentController extends Controller
                 $payment->cycle = $this->cycle->getActualCycle();
                 $payment->complete_name = $student->per_nombres_apellidos;
                 if ($payment->save()) {
+                    $payment_details = array();
                     foreach ($request->input('details') as $detail) {
                         $payment_detail = new PaymentDetail();
                         $payment_detail->payment_id = $payment->id;
@@ -153,8 +154,11 @@ class PaymentController extends Controller
                         $payment_detail->tariff_name = $detail['tariff_name'];
                         $payment_detail->tariff_amount = $detail['tariff_amount'];
                         $payment_detail->save();
+                        array_push($payment_details, $payment_detail);
                     }
-                    return message(true, "Pago registrado con éxito", null, 201);
+                    $payment->date_time_transaction = Carbon::parse($payment->date_time_transaction)->format('d/m/Y');
+                    $payment->paymentDetails = $payment_details;
+                    return message(true, "Pago registrado con éxito", $payment, 201);
                 } else {
                     return message(false, "Ha sucedido un error al intentar registrar el pago", null, 200);
                 }
