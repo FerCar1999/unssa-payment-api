@@ -8,7 +8,9 @@ use App\Models\PaymentDetail;
 use App\Models\Student;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Http;
 
 class PaymentController extends Controller
 {
@@ -132,8 +134,6 @@ class PaymentController extends Controller
             $student = $this->student->getInformation($code);
             if ($student) {
                 $payment = new Payment();
-                //Obteniendo receipt_id
-                $payment->receipt_id = rand(10000000, 99999999);;
                 $payment->date_time_transaction = Carbon::now();
                 $payment->transaction_id = rand(10000000, 99999999);
                 //Sacando monto total de la transaccion
@@ -203,15 +203,43 @@ class PaymentController extends Controller
         return $payments_map->flatten()->all();
     }
 
-    //Obtener un código que no se ha registrado hoy
-    public function getReceiptId()
+    public function paymentTest(Request $request)
     {
-        $receiptId = null;
-        $record = null;
-        while ($record == null) {
-            $receiptId = rand(10000000, 99999999);
-            $record = $this->payment->where('receipt_id', $receiptId)->whereDate('date_time_transaction', Carbon::now()->format('Y-m-d'))->first();
-        }
-        return $receiptId;
+        //Generando el UUID para el authorization y el order
+        $authorization = Str::uuid();
+        $order = Str::uuid();
+
+        $data = array(
+            'TransactionIdentifier' => $authorization,
+            'TotalAmount' => 1,
+            'CurrencyCode' => 840,
+            'ThreeDSecure' => true,
+            'Source' => (object) array(
+                'CardPresent' => false,
+                'CardEmvFallback' => false,
+                'ManualEntry' => false,
+                'Debit' => false,
+                'Contactless' => false,
+                'CardPan' => $request->input('credit_card_number'),
+                'CardCvv' => $request->input('credit_card_cvv'),
+                'CardExpiration' => $request->input('credit_card_exp_date'),
+                'CardholderName' => $request->input('credit_card_name'),
+            ),
+            'OrderIdentifier' => $order,
+            'AddressMatch' => false,
+            'ExtendedData' => (object) array(
+                'MerchantResponseUrl' => 'https://eo61czd1a8mxacr.m.pipedream.net',
+                'ThreeDSecure' => (object) array(
+                    'ChallengeWindowSize' => 4
+                ),
+            ));
+
+        $sale = Http::withHeaders([
+            'Content-Type' => 'application/json',
+            'PowerTranz-PowerTranzId' => env('POWERTRANZ_ID'),
+            'PowerTranz-PowerTranzPassword' => env('POWERTRANZ_PASSWORD')
+        ])->post('https://staging.ptranz.com/Api/spi/sale',
+        $data)->object();
+        return view('challenge',['sale'=>$sale]);
     }
 }

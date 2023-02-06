@@ -33,6 +33,8 @@ Route::group(['prefix' => 'payments'], function () {
     Route::get('duty', [PaymentController::class, 'duty']);
     Route::get('account-status', [PaymentController::class, 'accountStatus']);
     Route::post('', [PaymentController::class, 'store']);
+    Route::post('testing', [PaymentController::class, 'paymentTest']);
+    Route::view('html','challenge');
 });
 
 

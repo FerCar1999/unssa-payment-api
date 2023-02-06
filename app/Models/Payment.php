@@ -10,7 +10,7 @@ class Payment extends Model
 {
     protected $connection = 'mysql';
 
-    protected $fillable = ['receipt_id', 'date_time_transaction', 'transaction_id', 'amount', 'code', 'career', 'cycle', 'complete_name'];
+    protected $fillable = ['date_time_transaction', 'transaction_id','order_id', 'amount', 'code', 'career', 'cycle', 'complete_name'];
 
     //RELACIONES
     public function paymentDetails()
