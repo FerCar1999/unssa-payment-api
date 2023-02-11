@@ -7,6 +7,9 @@ use App\Models\Payment;
 use App\Models\PaymentDetail;
 use App\Models\Student;
 use Carbon\Carbon;
+use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Request as Psr7Request;
+use Illuminate\Http\Client\Request as ClientRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Crypt;
@@ -135,7 +138,11 @@ class PaymentController extends Controller
             if ($student) {
                 $payment = new Payment();
                 $payment->date_time_transaction = Carbon::now();
-                $payment->transaction_id = rand(10000000, 99999999);
+                //Generando el UUID para el authorization y el order
+                $transaction = Str::uuid();
+                $payment->transaction_id = $transaction;
+                $order = Str::uuid();
+                $payment->order_id = $order;
                 //Sacando monto total de la transaccion
                 $payment->amount = 0;
                 foreach ($request->input('details') as $detail) {
@@ -145,6 +152,8 @@ class PaymentController extends Controller
                 $payment->career = $student->carrera;
                 $payment->cycle = $this->cycle->getActualCycle();
                 $payment->complete_name = $student->per_nombres_apellidos;
+                $payment->status = 0;
+
                 if ($payment->save()) {
                     $payment_details = array();
                     foreach ($request->input('details') as $detail) {
@@ -158,15 +167,16 @@ class PaymentController extends Controller
                     }
                     $payment->date_time_transaction = Carbon::parse($payment->date_time_transaction)->format('d/m/Y');
                     $payment->paymentDetails = $payment_details;
-                    return message(true, "Pago registrado con éxito", $payment, 201);
+                    $saleMethod = $this->sendPayment($request, $transaction, $order);
+                    return message(true, "Pago registrado con éxito", $saleMethod, 201);
                 } else {
-                    return message(false, "Ha sucedido un error al intentar registrar el pago", null, 200);
+                    return message(false, "Ha sucedido un error al intentar registrar el pago", null, 500);
                 }
             } else {
-                return message(false, "No se ha encontrado el estudiante al cual registrar el pago", null, 200);
+                return message(false, "No se ha encontrado el estudiante al cual registrar el pago", null, 401);
             }
         } else {
-            return message(false, "Al parecer, no se encuentra registrado para realizar el pago", null, 200);
+            return message(false, "Al parecer, no se encuentra registrado para realizar el pago", null, 401);
         }
     }
 
@@ -203,14 +213,10 @@ class PaymentController extends Controller
         return $payments_map->flatten()->all();
     }
 
-    public function paymentTest(Request $request)
+    public function sendPayment($request, $transaction, $order)
     {
-        //Generando el UUID para el authorization y el order
-        $authorization = Str::uuid();
-        $order = Str::uuid();
-
         $data = array(
-            'TransactionIdentifier' => $authorization,
+            'TransactionIdentifier' => $transaction,
             'TotalAmount' => 1,
             'CurrencyCode' => 840,
             'ThreeDSecure' => true,
@@ -232,14 +238,74 @@ class PaymentController extends Controller
                 'ThreeDSecure' => (object) array(
                     'ChallengeWindowSize' => 4
                 ),
-            ));
+            )
+        );
 
         $sale = Http::withHeaders([
             'Content-Type' => 'application/json',
             'PowerTranz-PowerTranzId' => env('POWERTRANZ_ID'),
             'PowerTranz-PowerTranzPassword' => env('POWERTRANZ_PASSWORD')
-        ])->post('https://staging.ptranz.com/Api/spi/sale',
-        $data)->object();
-        return view('challenge',['sale'=>$sale]);
+        ])->post(
+            'https://staging.ptranz.com/Api/spi/sale',
+            $data
+        )->object();
+
+        return $sale;
+    }
+
+    public function receivePayment(Request $request)
+    {
+        //Verificando que el proceso de autenticación fue completado
+        if ($request->Response['IsoResponseCode'] == "3D0" && $request->Response['ResponseMessage'] == "3D-Secure complete") {
+            //Evaluando si la transaccion es 3DS
+            $eci_response = checkECI($request->Response['RiskManagement']['ThreeDSecure']['Eci']);
+            if ($eci_response['status']) {
+                $authentication_response = checkAuthentication($request->Response['RiskManagement']['ThreeDSecure']['AuthenticationStatus']);
+                if ($authentication_response['status']) {
+
+                    //Ejecutando el metodo payment para validar el pago
+                    return $this->paymentMethod($request->Response['SpiToken']);
+                    // if ($status_payment == 200) {
+                    //     $change_payment_status = $this->payment->where('transaction_id', $request->Response['TransactionIdentifier'])->update(['status' => 1]);
+                    //     //Enviando la vista con el pago realizado con éxito
+                    //     return $change_payment_status;
+                    // } else {
+                    //     return "ñao ñao";
+                    // }
+                    //Cambiando el estado de la transaccion a 1 para que ese pago sea el pichula
+                } else {
+                    return $authentication_response['message'];
+                }
+            } else {
+                return $eci_response['message'];
+            }
+        }
+    }
+
+    public function paymentMethod($spi_token)
+    {
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://staging.ptranz.com/api/spi/payment',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => '"'.$spi_token.'"',
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json'
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+
+        return $response;
     }
 }

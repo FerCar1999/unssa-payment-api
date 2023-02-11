@@ -17,14 +17,15 @@ class CreatePaymentsTable extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->string('receipt_id');
             $table->dateTime('date_time_transaction')->nullable();
-            $table->string('transaction_id')->nullable();
+            $table->uuid('transaction_id');
+            $table->uuid('order_id');
             $table->decimal('amount', 6, 2, true);
             $table->string('code');
             $table->string('career');
             $table->string('cycle');
             $table->string('complete_name');
+            $table->boolean('status');
             $table->timestamps();
             $table->softDeletes();
         });
