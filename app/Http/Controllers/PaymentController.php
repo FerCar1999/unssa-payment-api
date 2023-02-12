@@ -243,8 +243,8 @@ class PaymentController extends Controller
 
         $sale = Http::withHeaders([
             'Content-Type' => 'application/json',
-            'PowerTranz-PowerTranzId' => env('POWERTRANZ_ID'),
-            'PowerTranz-PowerTranzPassword' => env('POWERTRANZ_PASSWORD')
+            'PowerTranz-PowerTranzId' => env('POWERTRANZ_ID', "88804847"),
+            'PowerTranz-PowerTranzPassword' => env('POWERTRANZ_PASSWORD', "ZGkBp6N1x1JfFBYbKzcXd4SN1vz97hkbTCwjrJoxf4nv26132abSp3")
         ])->post(
             'https://staging.ptranz.com/Api/spi/sale',
             $data
@@ -296,7 +296,7 @@ class PaymentController extends Controller
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => '"'.$spi_token.'"',
+            CURLOPT_POSTFIELDS => '"' . $spi_token . '"',
             CURLOPT_HTTPHEADER => array(
                 'Content-Type: application/json'
             ),
