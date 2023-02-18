@@ -264,15 +264,20 @@ class PaymentController extends Controller
                 if ($authentication_response['status']) {
 
                     //Ejecutando el metodo payment para validar el pago
-                    return $this->paymentMethod($request->Response['SpiToken']);
-                    // if ($status_payment == 200) {
-                    //     $change_payment_status = $this->payment->where('transaction_id', $request->Response['TransactionIdentifier'])->update(['status' => 1]);
-                    //     //Enviando la vista con el pago realizado con éxito
-                    //     return $change_payment_status;
-                    // } else {
-                    //     return "ñao ñao";
-                    // }
+                    $payment_response = json_decode($this->paymentMethod($request->Response['SpiToken']));
                     //Cambiando el estado de la transaccion a 1 para que ese pago sea el pichula
+                    if ($payment_response != null) {
+                        if ($payment_response->Approved) {
+                            $change_payment_status = $this->payment->where('transaction_id', $request->Response['TransactionIdentifier'])->update(['transaction' => $payment_response->AuthorizationCode, 'status' => 1]);
+                            //Enviando la vista con el pago realizado con éxito
+                            $payment = $this->payment->where('transaction_id', $request->Response['TransactionIdentifier'])->with('paymentDetails')->first();
+                            return view('payment', compact('payment'));
+                        } else {
+                            return message(false, $payment_response->ResponseMessage, null, 400);
+                        }
+                    } else {
+                        return message(false, "Al parecer no se pudo procesar el pago, intentelo más tarde", null, 400);
+                    }
                 } else {
                     return $authentication_response['message'];
                 }

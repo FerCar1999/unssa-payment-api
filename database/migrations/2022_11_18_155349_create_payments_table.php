@@ -20,6 +20,7 @@ class CreatePaymentsTable extends Migration
             $table->dateTime('date_time_transaction')->nullable();
             $table->uuid('transaction_id');
             $table->uuid('order_id');
+            $table->string('transaction')->nullable();
             $table->decimal('amount', 6, 2, true);
             $table->string('code');
             $table->string('career');
