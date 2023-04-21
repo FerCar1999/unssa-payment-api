@@ -234,7 +234,7 @@ class PaymentController extends Controller
             'OrderIdentifier' => $order,
             'AddressMatch' => false,
             'ExtendedData' => (object) array(
-                'MerchantResponseUrl' => 'https://api.unssa.edu.sv/unssa-payment-api/public/api/receive-payment',
+                'MerchantResponseUrl' => 'https://api.unssa.edu.sv/unssa-payment-api/public/api/payments/receive-payment',
                 'ThreeDSecure' => (object) array(
                     'ChallengeWindowSize' => 4
                 ),
