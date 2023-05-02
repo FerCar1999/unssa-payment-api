@@ -255,8 +255,7 @@ class PaymentController extends Controller
 
     public function receivePayment(Request $request)
     {
-        $data = $request->input('Request');
-        return var_dump($data->IsoResponseCode);
+        $data = json_decode($request->input('Response'));
         //Verificando que el proceso de autenticación fue completado
         if ($data->IsoResponseCode == "3D0" && $data->ResponseMessage == "3D-Secure complete") {
             //Evaluando si la transaccion es 3DS
