@@ -38,7 +38,7 @@ class PaymentController extends Controller
             $mades = $this->payment->getPaymentsMade($cycle, $code);
             //return $mades;
             $student = $this->student->getInformation($code);
-            $online_payments = $this->payment->with('paymentDetails')->where('code', $student->per_carnet)->where('status',1)->get();
+            $online_payments = $this->payment->with('paymentDetails')->where('code', $student->per_carnet)->where('status', 1)->get();
             foreach ($online_payments as $online_payment) {
                 foreach ($online_payment->paymentDetails as $paymentDetail) {
                     //Flag para saber si el pago se encuentra en registrados
@@ -76,7 +76,7 @@ class PaymentController extends Controller
             $student = $this->student->getInformation($code);
             $duties = $this->payment->getDuty($student->per_carnet);
             //Obteniendo todos los pagos en linea registrados por el estudiante
-            $online_payments = $this->payment->with('paymentDetails')->where('code', $student->per_carnet)->where('status',1)->get();
+            $online_payments = $this->payment->with('paymentDetails')->where('code', $student->per_carnet)->where('status', 1)->get();
             foreach ($duties as $duty) {
                 foreach ($online_payments as $online_payment) {
                     foreach ($online_payment->paymentDetails as $paymentDetail) {
@@ -258,11 +258,10 @@ class PaymentController extends Controller
         $data = json_decode($request->input('Response'));
         //Verificando que el proceso de autenticación fue completado
         if ($data->IsoResponseCode == "3D0" && $data->ResponseMessage == "3D-Secure complete") {
-            return $data->RiskManagement;
             //Evaluando si la transaccion es 3DS
-            $eci_response = checkECI($data->RiskManagement['ThreeDSecure']['Eci']);
+            $eci_response = checkECI(isset($data->RiskManagement->ThreeDSecure->Eci) ? $data->RiskManagement->ThreeDSecure->Eci : null);
             if ($eci_response['status']) {
-                $authentication_response = checkAuthentication($data->RiskManagement['ThreeDSecure']['AuthenticationStatus']);
+                $authentication_response = checkAuthentication(isset($data->RiskManagement->ThreeDSecure->AuthenticationStatus) ? $data->RiskManagement->ThreeDSecure->AuthenticationStatus : null);
                 if ($authentication_response['status']) {
 
                     //Ejecutando el metodo payment para validar el pago
