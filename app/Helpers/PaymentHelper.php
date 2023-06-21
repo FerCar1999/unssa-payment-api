@@ -52,5 +52,11 @@ function checkAuthentication($authentication)
                 'message' => 'No se pudo aplicar 3DS a la transacción'
             );
             break;
+        default:
+            return array(
+                'status' => false,
+                'message' => 'No se pudo aplicar 3DS a la transacción'
+            );
+            break;
     }
 }
