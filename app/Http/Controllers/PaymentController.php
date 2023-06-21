@@ -268,6 +268,7 @@ class PaymentController extends Controller
                     $payment_response = json_decode($this->paymentMethod($data->SpiToken));
                     //Cambiando el estado de la transaccion a 1 para que ese pago sea el pichula
                     if ($payment_response != null) {
+                        return $payment_response;
                         if ($payment_response->Approved) {
                             $change_payment_status = $this->payment->where('transaction_id', $data->TransactionIdentifier)->update(['transaction' => $payment_response->AuthorizationCode, 'status' => 1]);
                             //Enviando la vista con el pago realizado con éxito
