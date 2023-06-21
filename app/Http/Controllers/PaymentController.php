@@ -258,6 +258,7 @@ class PaymentController extends Controller
         $data = json_decode($request->input('Response'));
         //Verificando que el proceso de autenticación fue completado
         if ($data->IsoResponseCode == "3D0" && $data->ResponseMessage == "3D-Secure complete") {
+            return $data->RiskManagement;
             //Evaluando si la transaccion es 3DS
             $eci_response = checkECI($data->RiskManagement['ThreeDSecure']['Eci']);
             if ($eci_response['status']) {
