@@ -7,12 +7,25 @@ function checkECI($eci)
 {
     switch ($eci) {
         case '05':
-        case '06':
+        case '02':
             return array(
                 'status' => true
             );
             break;
-
+        case '01':
+        case '06':
+            return array(
+                'status' => false,
+                'message' => 'Se intentó realizar autenticación 3DS'
+            );
+            break;
+        case '07':
+        case '00':
+            return array(
+                'status' => false,
+                'message' => 'La autenticación 3DS fracasó o no estaba disponible. La transacción se considera no 3DS'
+            );
+            break;
         default:
             return array(
                 'status' => false,
