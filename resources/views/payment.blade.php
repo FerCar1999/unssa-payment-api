@@ -143,7 +143,7 @@
                     <tr>
                         <td>{{ $paymentDetail->tariff_code }}</td>
                         <td>{{ $paymentDetail->tariff_name }}</td>
-                        $ <td>{{ $paymentDetail->tariff_amount }}</td>
+                        <td>${{ $paymentDetail->tariff_amount }}</td>
                     </tr>
                 @endforeach
             </tbody>
