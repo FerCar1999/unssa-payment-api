@@ -274,7 +274,7 @@ class PaymentController extends Controller
                             $payment = $this->payment->where('transaction_id', $data->TransactionIdentifier)->with('paymentDetails')->first();
                             return view('payment', compact('payment'));
                         } else {
-                            return message(false, $payment_response->ResponseMessage, null, 400);
+                            return message(false, checkISO($payment_response->IsoResponseCode), null, 400);
                         }
                     } else {
                         return message(false, "Al parecer no se pudo procesar el pago, intentelo más tarde", null, 400);
