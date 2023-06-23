@@ -266,6 +266,7 @@ class PaymentController extends Controller
 
                     //Ejecutando el metodo payment para validar el pago
                     $payment_response = json_decode($this->paymentMethod($data->SpiToken));
+                    return $payment_response;
                     //Cambiando el estado de la transaccion a 1 para que ese pago sea el pichula
                     if ($payment_response != null) {
                         if ($payment_response->Approved) {
