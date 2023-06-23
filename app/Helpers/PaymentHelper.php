@@ -104,3 +104,12 @@ function checkISO($iso)
             break;
     }
 }
+
+function check3DS($code)
+{
+    switch ($code) {
+        default:
+            return 'No se pudo aplicar 3DS a la transacción';
+            break;
+    }
+}

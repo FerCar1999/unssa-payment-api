@@ -263,7 +263,6 @@ class PaymentController extends Controller
             if ($eci_response['status']) {
                 $authentication_response = checkAuthentication(isset($data->RiskManagement->ThreeDSecure->AuthenticationStatus) ? $data->RiskManagement->ThreeDSecure->AuthenticationStatus : null);
                 if ($authentication_response['status']) {
-
                     //Ejecutando el metodo payment para validar el pago
                     $payment_response = json_decode($this->paymentMethod($data->SpiToken));
                     return $payment_response;
@@ -286,6 +285,8 @@ class PaymentController extends Controller
             } else {
                 return $eci_response['message'];
             }
+        }else{
+            return check3DS($data->IsoResponseCode);
         }
     }
 
