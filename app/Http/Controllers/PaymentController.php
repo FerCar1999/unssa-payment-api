@@ -243,8 +243,8 @@ class PaymentController extends Controller
 
         $sale = Http::withHeaders([
             'Content-Type' => 'application/json',
-            'PowerTranz-PowerTranzId' => env('POWERTRANZ_ID', "88804847"),
-            'PowerTranz-PowerTranzPassword' => env('POWERTRANZ_PASSWORD', "ZGkBp6N1x1JfFBYbKzcXd4SN1vz97hkbTCwjrJoxf4nv26132abSp3")
+            'PowerTranz-PowerTranzId' => env('POWERTRANZ_ID', "33101349"),
+            'PowerTranz-PowerTranzPassword' => env('POWERTRANZ_PASSWORD', "lyKOqjDwvi8sTlzuIio8LNtX9vws5xQc3Qxbfyr2r40lefz1OXRdwn")
         ])->post(
             'https://staging.ptranz.com/Api/spi/sale',
             $data
