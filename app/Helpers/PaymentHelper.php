@@ -8,15 +8,10 @@ function checkECI($eci)
     switch ($eci) {
         case '05':
         case '02':
-            return array(
-                'status' => true
-            );
-            break;
         case '01':
         case '06':
             return array(
-                'status' => false,
-                'message' => 'Se intentó realizar autenticación 3DS'
+                'status' => true
             );
             break;
         case '07':
