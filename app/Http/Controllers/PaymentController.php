@@ -246,7 +246,7 @@ class PaymentController extends Controller
             'PowerTranz-PowerTranzId' => env('POWERTRANZ_ID', "33101349"),
             'PowerTranz-PowerTranzPassword' => env('POWERTRANZ_PASSWORD', "lyKOqjDwvi8sTlzuIio8LNtX9vws5xQc3Qxbfyr2r40lefz1OXRdwn")
         ])->post(
-            'https://staging.ptranz.com/Api/spi/sale',
+            'https://gateway.ptranz.com/api/spi/sale',
             $data
         )->object();
 
@@ -295,7 +295,7 @@ class PaymentController extends Controller
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://staging.ptranz.com/api/spi/payment',
+            CURLOPT_URL => 'https://gateway.ptranz.com/api/spi/payment',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
