@@ -39,11 +39,11 @@ function checkAuthentication($authentication)
 {
     switch ($authentication) {
         case 'Y':
+        case 'A':
             return array(
                 'status' => true
             );
             break;
-        case 'A':
         case 'N':
         case 'U':
         case 'R':
